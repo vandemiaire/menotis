@@ -1,0 +1,473 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Gardenote\n"
+"POT-Creation-Date: 2026-01-03 00:23+0100\n"
+"PO-Revision-Date: 2026-01-03 00:24+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+"X-Poedit-Basepath: ../../..\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: backup.ajax.php:35 uploadimage.ajax.php:37
+msgid "Error during upload"
+msgstr "Erreur durant le téléversement"
+
+#: backup.ajax.php:44 uploadimage.ajax.php:45
+msgid "This file is too big"
+msgstr "Ce fichier est trop gros"
+
+#: backup.ajax.php:54 uploadimage.ajax.php:54
+msgid "This format is not allowed"
+msgstr "Ce format n'est pas autorisé"
+
+#: backup.ajax.php:64 uploadimage.ajax.php:67
+msgid "Unknown error while saving"
+msgstr "Erreur inconnue durant l'enregistrement"
+
+#: backup.ajax.php:74
+msgid "Unable to open the temporary ZIP file"
+msgstr "Impossible d'ouvrir le fichier ZIP temporaire"
+
+#: backup.ajax.php:87
+msgid "ZIP is not enabled on your PHP server"
+msgstr "ZIP n'est pas activé sur votre serveur PHP"
+
+#: backup.ajax.php:105
+msgid "Unable to create the ZIP file"
+msgstr "Impossible de créer le fichier ZIP"
+
+#: firstlaunch.php:83
+#, php-format
+msgid "%s installation"
+msgstr "Installation de %s"
+
+#: firstlaunch.php:86
+msgid "This is your first launch, please create your account."
+msgstr "C'est votre premier lancement, veuillez créer votre compte."
+
+#: firstlaunch.php:90 login.php:12 modalsettings.inc.php:31
+msgid "Login"
+msgstr "Identifiant"
+
+#: firstlaunch.php:94 login.php:16 modalsettings.inc.php:35
+msgid "Password"
+msgstr "Mot de passe"
+
+#: firstlaunch.php:96
+msgid "Choose a strong password"
+msgstr "Choisissez un mot de passe fort"
+
+#: firstlaunch.php:99
+msgid "Re-enter your password"
+msgstr "Entrez à nouveau votre mot de passe"
+
+#: firstlaunch.php:103 modalsettings.inc.php:17
+msgid "Language"
+msgstr "Langue"
+
+#: firstlaunch.php:108 modalsettings.inc.php:12
+msgid "Timezone"
+msgstr "Fuseau horaire"
+
+#: firstlaunch.php:115
+msgid "Create the account"
+msgstr "Créer le compte"
+
+#: functions.inc.php:107
+msgid "Change background"
+msgstr "Changer le fond"
+
+#: functions.inc.php:108
+msgid "Edit this note"
+msgstr "Modifier cette note"
+
+#: functions.inc.php:109
+msgid "Delete this note"
+msgstr "Supprimer cette note"
+
+#: functions.inc.php:110
+msgid "Last update"
+msgstr "Dernière modification"
+
+#: functions.inc.php:111 modaluploadimage.inc.php:6
+msgid "Upload a picture"
+msgstr "Envoyer une image"
+
+#: functions.inc.php:112
+msgid "Add checkboxes"
+msgstr "Ajouter les cases à cocher"
+
+#: functions.inc.php:113
+msgid "Remove checkboxes"
+msgstr "Enlever les cases à cocher"
+
+#: functions.inc.php:116
+msgid "You currently have no notes."
+msgstr "Vous n'avez actuellement aucune note."
+
+#: functions.inc.php:166
+#, php-format
+msgid "Today at %s"
+msgstr "Aujourd'hui à %s"
+
+#: functions.inc.php:168
+#, php-format
+msgid "Yesterday at %s"
+msgstr "Hier à %s"
+
+#: functions.inc.php:178
+msgid "Unpin this note"
+msgstr "Désépingler cette note"
+
+#: functions.inc.php:182
+msgid "Pin this note"
+msgstr "Épingler cette note"
+
+#: functions.inc.php:187
+msgid "Restore this note"
+msgstr "Restaurer cette note"
+
+#: functions.inc.php:193
+msgid "Archive this note"
+msgstr "Archiver cette note"
+
+#: index.php:71
+msgid "Add note"
+msgstr "Ajouter une note"
+
+#: index.php:80
+msgid "Actives notes"
+msgstr "Notes actives"
+
+#: index.php:84 index.php:155
+msgid "Archived notes"
+msgstr "Notes archivées"
+
+#: index.php:98
+msgid "Options"
+msgstr "Options"
+
+#: index.php:103 modalimages.inc.php:5
+msgid "Images"
+msgstr "Images"
+
+#: index.php:108 modalbackup.inc.php:23
+msgid "Backup"
+msgstr "Sauvegarde"
+
+#: index.php:113
+msgid "Switch theme"
+msgstr "Changer le thème"
+
+#: index.php:118 modalsettings.inc.php:5
+msgid "Settings"
+msgstr "Paramètres"
+
+#: index.php:123
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: index.php:128 modalhelp.inc.php:5
+msgid "Help"
+msgstr "Aide"
+
+#: index.php:133 modalabout.inc.php:5
+msgid "About"
+msgstr "À propos"
+
+#: index.php:141
+msgid "Search"
+msgstr "Chercher"
+
+#: index.php:166
+msgid "Pinned notes"
+msgstr "Notes épinglées"
+
+#: index.php:174
+msgid "Others notes"
+msgstr "Autres notes"
+
+#: login.php:8
+#, php-format
+msgid "Log in to %s"
+msgstr "S'identifier dans %s"
+
+#: login.php:22
+msgid "Submit"
+msgstr "Valider"
+
+#: modalabout.inc.php:14 modalbackup.inc.php:40 modalcolor.inc.php:41
+#: modaledit.inc.php:19 modalhelp.inc.php:55 modalimages.inc.php:16
+#: modalimages.inc.php:29 modalsettings.inc.php:43 modaluploadimage.inc.php:22
+msgid "Close"
+msgstr "Fermer"
+
+#: modalbackup.inc.php:6
+msgid "Backup or restore"
+msgstr "Sauvegarder ou restaurer"
+
+#: modalbackup.inc.php:11
+msgid ""
+"You could manually schedule a backup on your server, just save the whole "
+"\"datas\" folder somewhere, it contains all your notes and images."
+msgstr ""
+"Vous pouvez programmer manuellement une sauvegarde sur votre serveur, il "
+"suffit d’enregistrer l’intégralité du dossier \"datas\" quelque part, car il "
+"contient toutes vos notes et images."
+
+#: modalbackup.inc.php:14
+msgid ""
+"Or, you can backup your notes and images to a ZIP file, and restore it here."
+msgstr ""
+"Vous pouvez également sauvegarder vos notes et images dans un fichier ZIP, "
+"puis le restaurer ici."
+
+#: modalbackup.inc.php:17
+msgid "Backup your notes and images"
+msgstr "Sauvegarder vos notes et vos images"
+
+#: modalbackup.inc.php:20
+msgid "All your notes and images will be saved in a ZIP file."
+msgstr ""
+"Toutes vos notes et vos images seront enregistrées dans un fichier ZIP."
+
+#: modalbackup.inc.php:26
+msgid "Restore your notes and images"
+msgstr "Restaurer vos notes et vos images"
+
+#: modalbackup.inc.php:29
+msgid "The notes from the backup will be merged with the existing notes."
+msgstr ""
+"Les notes de cette sauvegardes seront fusionnées avec les notes existantes."
+
+#: modalbackup.inc.php:33
+msgid "Use the ZIP file created with the backup button"
+msgstr "Utilisez le fichier ZIP généré depuis le bouton de sauvegarde"
+
+#: modalbackup.inc.php:36
+msgid "Restore"
+msgstr "Restaurer"
+
+#: modalcolor.inc.php:5
+msgid "Color"
+msgstr "Couleur"
+
+#: modalcolor.inc.php:10
+msgid "Choose a color"
+msgstr "Choisissez une couleur"
+
+#: modalcolor.inc.php:15
+msgid "Change it if you want"
+msgstr "Changez si vous voulez"
+
+#: modalcolor.inc.php:19
+msgid "Or select a wallpaper"
+msgstr "Ou sélectionnez une image de fond"
+
+#: modalcolor.inc.php:21
+msgid "No wallpaper"
+msgstr "Aucune image de fond"
+
+#: modalcolor.inc.php:41 modaledit.inc.php:19 modalsettings.inc.php:43
+msgid "Close without saving"
+msgstr "Fermer sans enregistrer"
+
+#: modalcolor.inc.php:42
+msgid "Remove the color of this note"
+msgstr "Supprimer la couleur de cette note"
+
+#: modalcolor.inc.php:42
+msgid "Reset"
+msgstr "Réinitialiser"
+
+#: modalcolor.inc.php:43
+msgid "Use this color"
+msgstr "Utiliser cette couleur"
+
+#: modalcolor.inc.php:43 modaledit.inc.php:20 modalsettings.inc.php:44
+msgid "Save"
+msgstr "Enregistrer"
+
+#: modaldelete.inc.php:5 modalimages.ajax.php:18
+msgid "Delete"
+msgstr "Supprimer"
+
+#: modaldelete.inc.php:10
+msgid "Do you really want to permanently delete this note ?"
+msgstr "Voulez-vous vraiment supprimer cette note de manière permanente ?"
+
+#: modaldelete.inc.php:13
+msgid "This operation is irreversible !"
+msgstr "Cette opération est irréversible !"
+
+#: modaldelete.inc.php:17
+msgid "No"
+msgstr "Non"
+
+#: modaldelete.inc.php:18
+msgid "Yes"
+msgstr "Oui"
+
+#: modaledit.inc.php:5
+msgid "Edit"
+msgstr "Édition"
+
+#: modaledit.inc.php:10 modaledit.inc.php:11 modaluploadimage.inc.php:12
+#: modaluploadimage.inc.php:13
+msgid "Title"
+msgstr "Titre"
+
+#: modaledit.inc.php:10 modaluploadimage.inc.php:12
+msgid "optionnal"
+msgstr "optionnel"
+
+#: modaledit.inc.php:14 modaledit.inc.php:15
+msgid "Content"
+msgstr "Contenu"
+
+#: modaledit.inc.php:20
+msgid "Save this note"
+msgstr "Enregistrer cette note"
+
+#: modalhelp.inc.php:10
+msgid "A basic markdown is available in the notes editor."
+msgstr "Un markdown basique est disponible dans l'édition des notes."
+
+#: modalhelp.inc.php:12 modalhelp.inc.php:16 modalhelp.inc.php:20
+#: modalhelp.inc.php:24 modalhelp.inc.php:28 modalhelp.inc.php:32
+msgid "Your text"
+msgstr "Votre texte"
+
+#: modalhelp.inc.php:13
+msgid "First title"
+msgstr "Premier titre"
+
+#: modalhelp.inc.php:17
+msgid "Second title"
+msgstr "Deuxième titre"
+
+#: modalhelp.inc.php:21
+msgid "Third title"
+msgstr "Troisième titre"
+
+#: modalhelp.inc.php:25
+msgid "Bold"
+msgstr "Gras"
+
+#: modalhelp.inc.php:29
+msgid "Italic"
+msgstr "Italique"
+
+#: modalhelp.inc.php:33
+msgid "Quote (each line must start with this symbol)"
+msgstr "Citation (chaque ligne doit commencer par ce symbole)"
+
+#: modalhelp.inc.php:36 modalhelp.inc.php:40 modalhelp.inc.php:44
+msgid "Your optionnal text"
+msgstr "Votre texte optionnel"
+
+#: modalhelp.inc.php:37
+msgid "Checkbox unchecked (there is a space between \"[\" and \"]\")"
+msgstr "Case à cocher non cochée (il y a un espace entre \"[\" et \"]\")"
+
+#: modalhelp.inc.php:41
+msgid "Checkbox checked"
+msgstr "Case a cocher cochée"
+
+#: modalhelp.inc.php:44
+msgid "image url"
+msgstr "lien de l'image"
+
+#: modalhelp.inc.php:45
+msgid "Image with description"
+msgstr "Image avec description"
+
+#: modalhelp.inc.php:47
+msgid "Tips"
+msgstr "Astuces"
+
+#: modalhelp.inc.php:49
+msgid "Click on a note's header to edit it."
+msgstr "Cliquez sur le titre d'une note pour l'éditer."
+
+#: modalhelp.inc.php:50
+msgid "Click on an image to see it in a larger size."
+msgstr "Cliquez sur une image pour la voir en plus grand."
+
+#: modalhelp.inc.php:51
+msgid ""
+"When you check a box, the corresponding markdown is immediately modified and "
+"saved."
+msgstr ""
+"Quand vous cochez une case, le markdown correspondant est immédiatement "
+"modifié et enregistré."
+
+#: modalimages.inc.php:10
+msgid ""
+"The images will be deleted without confirmation, you will then need to "
+"delete the markdown links in your notes that used them."
+msgstr ""
+"Les images seront supprimées sans confirmation, vous devrez ensuite "
+"supprimer les liens markdown dans vos notes qui les utilisaient."
+
+#: modalsettings.inc.php:22
+msgid "Time format"
+msgstr "Format de l'heure"
+
+#: modalsettings.inc.php:37
+msgid "Leave blank to avoid changing the password."
+msgstr "Laissez vide pour ne pas modifier le mot de passe."
+
+#: modaluploadimage.inc.php:10
+msgid "A markdown code including the image will be inserted into the note."
+msgstr "Un code markdown incluant cette image sera ajouté à la note."
+
+#: modaluploadimage.inc.php:16
+msgid "Image file"
+msgstr "Fichier image"
+
+#: modaluploadimage.inc.php:18
+msgid "Authorized formats: jpg, png"
+msgstr "Formats autorisés : jpg, png"
+
+#: modaluploadimage.inc.php:23
+msgid "Upload"
+msgstr "Envoyer"
+
+#: security.ajax.php:91
+msgid "Wrong login or password"
+msgstr "Mauvais identifiant ou mot de passe"
+
+#: security.ajax.php:99
+msgid "You are now logged in"
+msgstr "Vous êtes maintenant authentifié"
+
+#: security.ajax.php:112
+msgid "You are now logged out"
+msgstr "Vous êtes maintenant déconnecté"
+
+#: settings.ajax.php:131
+msgid "24 hours"
+msgstr "24 heures"
+
+#: settings.ajax.php:131
+msgid "12 hours"
+msgstr "12 heures"
+
+#: uploadimage.ajax.php:26
+msgid "No UID"
+msgstr "Pas de UID"
+
+#~ msgid "Show actives notes"
+#~ msgstr "Voir les notes actives"
+
+#~ msgid "Show archived notes"
+#~ msgstr "Voir les notes archivées"
+
+#~ msgid "Show archives"
+#~ msgstr "Voir les archives"

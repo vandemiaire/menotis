@@ -1,0 +1,20 @@
+{
+    "name": "Ménotis",
+    "short_name": "Ménotis",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#111111",
+    "theme_color": "#eeeeee",
+    "icons": [
+        {
+            "src": "menotis_icon_192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "menotis_icon_512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

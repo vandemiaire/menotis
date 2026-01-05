@@ -1,0 +1,19 @@
+@font-face {
+    font-family: 'Nunito';
+    src: url('/fonts/Nunito-VariableFont_wght.ttf');
+}
+
+* {
+    font-family: "Nunito", sans-serif !important;
+}
+
+.opacity-1-when-hover:hover {
+    opacity: 1 !important;
+}
+
+.code {
+    font-family: "Courier New", monospace !important;
+    line-height: normal !important;
+    border-left: 2px solid;
+    padding-left: 5px;
+}
