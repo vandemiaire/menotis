@@ -1,7 +1,9 @@
 <?php
+include("csrf.inc.php");
 
 include("datas/config.php");
 include("security.inc.php");
+include("functions.inc.php");
 
 // Hacking attempt
 if (!checkCookie()) {
@@ -24,6 +26,14 @@ if (isset($_POST["uid"])) {
 } else {
     http_response_code(400);
     exit(_("No UID"));
+}
+
+// Reject anything that is not an existing note (prevents path traversal),
+// checked before saving the image so no orphan file is left behind
+$filepath = "datas/" . $uid . ".json";
+if (!isValidNoteUid($uid) || !is_file($filepath)) {
+    http_response_code(400);
+    exit("Invalid UID");
 }
 
 // Title
@@ -67,8 +77,7 @@ if (!move_uploaded_file($file["tmp_name"], $destination)) {
     exit(_("Unknown error while saving"));
 }
 
-// Existing note file
-$filepath = "datas/" . $uid . ".json";
+// Existing note file ($filepath validated above)
 $json = file_get_contents($filepath);
 $datas = json_decode($json);
 

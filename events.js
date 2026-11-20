@@ -208,7 +208,7 @@ document.querySelectorAll(".note-btn-modal-color").forEach(button => {
         document.getElementById("modal-background-value").value = bgimage;
 
         // Load palette content
-        fetch("palettes.ajax.php", { method: "POST" })
+        fetch("palettes.ajax.php", { method: "POST", headers: MENOTIS_HEADERS })
             .then(res => res.text())
             .then(data => {
                 document.getElementById("modal-color-palettes").innerHTML = data;

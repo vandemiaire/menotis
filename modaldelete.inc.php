@@ -30,7 +30,8 @@
         fetch("notes.ajax.php", {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
+                "Content-Type": "application/x-www-form-urlencoded",
+                ...MENOTIS_HEADERS
             },
             body: new URLSearchParams({
                 action: "delete",

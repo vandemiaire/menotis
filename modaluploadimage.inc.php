@@ -48,6 +48,7 @@
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "uploadimage.ajax.php", true);
+        xhr.setRequestHeader("X-Menotis", "1");
         xhr.onload = function() {
             if (xhr.status === 200) {
 

@@ -1,4 +1,5 @@
 <?php
+include("csrf.inc.php");
 
 include("const.inc.php");
 

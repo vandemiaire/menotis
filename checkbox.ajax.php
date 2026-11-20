@@ -1,8 +1,10 @@
 <?php
+include("csrf.inc.php");
 
 include("const.inc.php");
 include("datas/config.php");
 include("security.inc.php");
+include("functions.inc.php");
 
 // Hacking attempt
 if (!checkCookie()) {
@@ -21,11 +23,21 @@ if (!isset($_POST["uid"])) {
 
 $uid = $_POST["uid"];
 
+// Reject anything that is not a note UID (prevents path traversal)
+if (!isValidNoteUid($uid)) {
+    http_response_code(400);
+    exit("Invalid UID");
+}
+
 // Content of the file
 $datas = new stdClass();
 
 // Existing note file
 $filepath = "datas/" . $uid . ".json";
+if (!is_file($filepath)) {
+    http_response_code(404);
+    exit("Note not found");
+}
 $json = file_get_contents($filepath);
 $datas = json_decode($json);
 

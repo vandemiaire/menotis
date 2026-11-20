@@ -19,8 +19,9 @@ function checkCookie()
 
 function logout()
 {
-    // Remove cookie
-    setcookie(COOKIE_NAME, "", 1, "/");
+    // Remove cookie (path "/" used now, and the default path used by older versions)
+    setcookie(COOKIE_NAME, "", cookieOptions(1));
+    setcookie(COOKIE_NAME, "", 1);
 
     // Clean memory
     if (isset($_COOKIE[COOKIE_NAME])) {
@@ -48,5 +49,22 @@ function cookieSet()
 {
 
     // We are logged
-    setcookie(COOKIE_NAME, COOKIE_VALUE, time() + (86400 * COOKIE_RETENTION));
+    setcookie(COOKIE_NAME, COOKIE_VALUE, cookieOptions(time() + (86400 * COOKIE_RETENTION)));
+}
+
+function isHttps()
+{
+    return (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off")
+        || (($_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "") === "https");
+}
+
+function cookieOptions($expires)
+{
+    return [
+        "expires" => $expires,
+        "path" => "/",
+        "secure" => isHttps(),   // Only sent over HTTPS (when the site uses HTTPS)
+        "httponly" => true,      // Not readable by JavaScript (limits damage of an XSS)
+        "samesite" => "Strict",  // Never sent by requests coming from another site (CSRF)
+    ];
 }

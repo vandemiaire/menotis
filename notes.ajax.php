@@ -1,4 +1,5 @@
 <?php
+include("csrf.inc.php");
 
 session_start();
 
@@ -28,8 +29,18 @@ if ($_POST["uid"] <> "") {
     // Existing UID
     $uid = $_POST["uid"];
 
+    // Reject anything that is not a note UID (prevents path traversal)
+    if (!isValidNoteUid($uid)) {
+        http_response_code(400);
+        exit("Invalid UID");
+    }
+
     // Existing note file
-    $filepath = "datas/" . $_POST["uid"] . ".json";
+    $filepath = "datas/" . $uid . ".json";
+    if (!is_file($filepath)) {
+        http_response_code(404);
+        exit("Note not found");
+    }
     $json = file_get_contents($filepath);
     $datas = json_decode($json);
 } else {
@@ -105,13 +116,16 @@ switch ($_POST["action"]) {
         break;
     case "gettitle":
 
+        // Raw text, never interpreted as HTML by the browser
+        header("Content-Type: text/plain; charset=utf-8");
         echo $datas->title;
         die();
         break;
 
     case "getcontent":
 
-        // Get raw content (without markdown)
+        // Get raw content (without markdown), never interpreted as HTML by the browser
+        header("Content-Type: text/plain; charset=utf-8");
         echo $datas->content;
         die();
         break;
@@ -132,6 +146,7 @@ switch ($_POST["action"]) {
         // Return formated content, but not saved in the file
         $datas->modified = date("d.m.Y H:i", $datas->modified);
         $datas->content = markdownReallyBasic($datas->content, $uid);
+        $datas->title = escHtml($datas->title); // Inserted with innerHTML on the client
 
         // New content
         echo json_encode($datas);
@@ -141,7 +156,8 @@ switch ($_POST["action"]) {
 
         // Return formated content, but not saved in the file
         $datas->modified = date("d.m.Y H:i", $datas->modified);
-        $datas->content = markdownReallyBasic($datas->content, $uid);
+        $datas->content = markdownReallyBasic($datas->content ?? "", $uid);
+        $datas->title = escHtml($datas->title ?? ""); // Inserted with innerHTML on the client
 
         // New content
         echo json_encode($datas);
@@ -149,7 +165,7 @@ switch ($_POST["action"]) {
 
     case "delete":
 
-        // Delete the file, the path is made with "datas/" hardcoded, so it "should" be secure
+        // Delete the file (UID validated above, so the path stays inside "datas/")
         unlink($filepath);
 
         echo json_encode($datas);
@@ -157,9 +173,15 @@ switch ($_POST["action"]) {
 
     case "background":
 
-        // Colors to the object
-        $datas->bgcolor = $_POST["bgcolor"];
-        $datas->bgimage = $_POST["bgimage"];
+        // Colors to the object, only a "#RRGGBB" color or an existing wallpaper (or empty) is accepted
+        $bgcolor = $_POST["bgcolor"] ?? "";
+        $bgimage = $_POST["bgimage"] ?? "";
+        if (($bgcolor !== "" && sanitizeBgColor($bgcolor) === "") || ($bgimage !== "" && sanitizeBgImage($bgimage) === "")) {
+            http_response_code(400);
+            exit("Invalid background");
+        }
+        $datas->bgcolor = $bgcolor;
+        $datas->bgimage = $bgimage;
 
         // Save the file
         $json = json_encode($datas);

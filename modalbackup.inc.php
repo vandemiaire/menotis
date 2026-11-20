@@ -51,7 +51,8 @@
             const response = await fetch("backup.ajax.php", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    ...MENOTIS_HEADERS
                 },
                 body: new URLSearchParams({
                     action: "backup"
@@ -96,6 +97,7 @@
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "backup.ajax.php", true);
+        xhr.setRequestHeader("X-Menotis", "1");
         xhr.onload = function() {
             if (xhr.status === 200) {
 

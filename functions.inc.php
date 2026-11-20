@@ -16,6 +16,34 @@ function guid()
     return bin2hex(random_bytes(16));
 }
 
+function isValidNoteUid($uid)
+{
+    // A note UID is the JSON filename without extension: "note" followed by letters/digits only.
+    // This forbids "/", "\", "." and therefore any path traversal outside "datas/".
+    return is_string($uid) && preg_match('/^note[a-zA-Z0-9]{1,64}$/', $uid) === 1;
+}
+
+function escHtml($text)
+{
+    // Escape any user text before putting it in HTML (prevents XSS)
+    return htmlspecialchars((string)$text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+function sanitizeBgColor($color)
+{
+    // Only "#RRGGBB" is allowed, anything else becomes "no color"
+    return (is_string($color) && preg_match('/^#[0-9a-fA-F]{6}$/', $color) === 1) ? $color : "";
+}
+
+function sanitizeBgImage($image)
+{
+    // Only an existing file of the "wallpapers" folder is allowed, anything else becomes "no wallpaper"
+    if (!is_string($image) || preg_match('/^[a-zA-Z0-9_.-]+\.(jpg|png)$/i', $image) !== 1) {
+        return "";
+    }
+    return is_file(__DIR__ . "/wallpapers/" . $image) ? $image : "";
+}
+
 function notesDatasLoad()
 {
 
@@ -43,11 +71,18 @@ function notesDatasLoad()
             $isthisnotepinned = false;
             $isthisnotearchived = false;
 
+            // UID is the name of the file, without path and extension
+            $uid = basename($file, ".json");
+
             // Json to object
             $datathisnote = json_decode($content);
 
-            // UID is the name of the file, without path and extension
-            $datathisnote->uid = basename($file, ".json");
+            // Ignore invalid JSON and files that are not notes (e.g. odd names from a restored backup)
+            if (!is_object($datathisnote) || !isValidNoteUid($uid)) {
+                continue;
+            }
+
+            $datathisnote->uid = $uid;
 
             // Add json to array
             $notesdatas[] = $datathisnote;
@@ -141,13 +176,12 @@ function notesDataShow($show)
 
             // Background color and image
             $style = "";
-            $bgcolor = "";
-            $bgimage = "";
-            if ((isset($datathisnote->bgimage)) && ($datathisnote->bgimage != "")) {
-                $bgimage = $datathisnote->bgimage;
+            // Values are re-validated here because the JSON files may come from a restored backup
+            $bgcolor = sanitizeBgColor($datathisnote->bgcolor ?? "");
+            $bgimage = sanitizeBgImage($datathisnote->bgimage ?? "");
+            if ($bgimage != "") {
                 $style .= "background-size:cover;background-repeat:no-repeat;background-image:url(wallpapers/" . $bgimage . ") !important;";
-            } else if ((isset($datathisnote->bgcolor)) && ($datathisnote->bgcolor != "")) {
-                $bgcolor = $datathisnote->bgcolor;
+            } else if ($bgcolor != "") {
                 $style .= "background-color:" . $bgcolor . " !important;";
             }
 
@@ -196,8 +230,9 @@ function notesDataShow($show)
                 $class_hide_when_archived = "";
             }
 
-            // Labels and content
-            $datathisnote->content = markdownReallyBasic($datathisnote->content, $datathisnote->uid);
+            // Labels and content (both escaped against XSS, markdown escapes internally)
+            $datathisnote->title = escHtml($datathisnote->title ?? "");
+            $datathisnote->content = markdownReallyBasic($datathisnote->content ?? "", $datathisnote->uid);
 
             $html = <<<HTML
                 <div class="col col-md-2 col-6">
@@ -274,68 +309,89 @@ function daysBetweenTwoDates(DateTimeInterface $d1, DateTimeInterface $d2): int
 function markdownReallyBasic($text, $uid)
 {
 
-    // Regular expression to find the URLs
-    $url_regex = '<https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>';
+    // Escape ALL user text first (prevents XSS), the markdown below only adds our own tags.
+    // Markdown characters (# * _ [ ] ! ( )) are not changed by htmlspecialchars.
+    // "\0" is reserved for the internal placeholders of markdownInline().
+    $text = escHtml(str_replace("\0", "", (string)$text));
 
-    // Titles
-    $text = preg_replace('/^###\s+(.+)$/m', '<h5 class="lh-sm">$1</h5>', $text);
-    $text = preg_replace('/^##\s+(.+)$/m', '<h4 class="lh-sm">$1</h4>', $text);
-    $text = preg_replace('/^#\s+(.+)$/m', '<h3 class="lh-sm">$1</h3>', $text);
-
-    // Images markdown -> img HTML
-    // ![alt](file) => <img src="file" alt="alt">
-    $text = preg_replace(
-        '/!\[([^\]]*)\]\(([^)]+)\)/',
-        '<img src="$2" alt="$1" class="img-thumbnail my-1" data-bs-toggle="tooltip" title="$1" onclick="return imageView(this);">',
-        $text
-    );
-
-    // D'abord les **gras**
-    $text = preg_replace('/\*\*(.+?)\*\*/s', '<b>$1</b>', $text);
-
-    // Puis les *gras* (en évitant ceux déjà traités)
-    $text = preg_replace('/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/s', '<b>$1</b>', $text);
-
-    // _italique_ (sans matcher __)
-    $text = preg_replace('/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/s', '<i>$1</i>', $text);
-
-    // Checkboxes
+    // Checkbox counter, shared by all lines. It MUST count every "[ ]", "[x]", "[X]" of the raw text
+    // in order (even inside code lines or image alt texts) because "checkbox.ajax.php" (action "check")
+    // finds the box to toggle with the same count.
     $index = 0;
-    $text = preg_replace_callback(
-        '/\[(x|X| )\]/',
-        function ($m) use (&$index, &$uid) {
-            $checked = $m[1] !== ' ' ? ' checked' : '';
-            return '<input data-uid="' . $uid . '" type="checkbox" class="form-check-input md-checkbox" data-index="' . ($index++) . '"' . $checked . '>';
-        },
-        $text
-    );
 
-    // Encadrer chaque ligne avec <p>, sauf les titres et lignes vides
+    // One line at a time: works with "\n" and "\r\n" (Windows) line endings, and bold/italic never
+    // spread over several lines.
     $lines = preg_split('/\R/', $text);
     foreach ($lines as &$line) {
         $trimmed = trim($line);
 
         if ($trimmed === '') {
+            $line = '';
             continue;
         }
 
-        // Ligne de code (commence par >)
-        if (preg_match('/^>\s*(.+)$/', $trimmed, $m)) {
-            $line = '<div class="code lh-sm my-0">' . htmlspecialchars($m[1], ENT_QUOTES, 'UTF-8') . '</div>';
+        // Code line (starts with ">", already escaped as "&gt;"): shown as is, no formatting
+        if (preg_match('/^&gt;\s*(.+)$/', $trimmed, $m)) {
+            $index += preg_match_all('/\[(x|X| )\]/', $m[1]);
+            $line = '<div class="code lh-sm my-0">' . $m[1] . '</div>';
             continue;
         }
 
-        // Pas de <p> autour des titres
-        if (preg_match('/^<h[1-3]>/', $trimmed)) {
+        // Titles: "#" => h3, "##" => h4, "###" => h5 (no <p> around them)
+        if (preg_match('/^(#{1,3})[ \t]+(.+)$/', $trimmed, $m)) {
+            $level = strlen($m[1]) + 2;
+            $line = "<h{$level} class=\"lh-sm\">" . markdownInline($m[2], $uid, $index) . "</h{$level}>";
             continue;
         }
 
-        // Make all URLs clickable
-        $trimmed = preg_replace($url_regex, '<a href="$0" target="_blank" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">$0</a>', $trimmed);
-
-        // Ligne normale -> <p>
-        $line = "<p class=\"lh-sm my-1\">" . $trimmed . "</p>";
+        // Normal line -> <p>
+        $line = "<p class=\"lh-sm my-1\">" . markdownInline($trimmed, $uid, $index) . "</p>";
     }
 
     return implode("\n", $lines);
+}
+
+function markdownInline($text, $uid, &$index)
+{
+    // Formatting inside ONE line of already escaped text: images, URLs, checkboxes, bold, italic.
+
+    // Images, URLs and checkboxes are replaced first by placeholders ("\0" + number + "\0"),
+    // so that bold/italic can never break them (e.g. "_" in "https://site.com/my_page_x").
+    $tokens = [];
+    $url = 'https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:&amp;|[-a-zA-Z0-9()@:%_\+.~#?\/=])*';
+    $text = preg_replace_callback(
+        '/(?<image>!\[(?<alt>[^\]]*)\]\((?<src>[^)\s]+)\))|(?<url>' . $url . ')|\[(?<box>x|X| )\]/',
+        function ($m) use (&$tokens, &$index, $uid) {
+            if (isset($m["box"]) && $m["box"] !== "") {
+
+                // Checkbox
+                $checked = $m["box"] !== ' ' ? ' checked' : '';
+                $html = '<input data-uid="' . $uid . '" type="checkbox" class="form-check-input md-checkbox" data-index="' . ($index++) . '"' . $checked . '>';
+            } elseif (isset($m["url"]) && $m["url"] !== "") {
+
+                // Clickable URL
+                $html = '<a href="' . $m["url"] . '" target="_blank" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">' . $m["url"] . '</a>';
+            } else {
+
+                // Image ![alt](file), a "[x]" alt text still counts as a checkbox (see markdownReallyBasic)
+                $index += preg_match_all('/\[(x|X| )\]/', $m["image"]);
+                $html = '<img src="' . $m["src"] . '" alt="' . $m["alt"] . '" class="img-thumbnail my-1" data-bs-toggle="tooltip" title="' . $m["alt"] . '" onclick="return imageView(this);">';
+            }
+            $tokens[] = $html;
+            return "\0" . (count($tokens) - 1) . "\0";
+        },
+        $text
+    );
+
+    // No space just inside the markers, so "2 * 3 * 4" or "a _ b _ c" stay as is
+
+    // **bold**, then *bold* (avoiding the ones already done)
+    $text = preg_replace('/\*\*(?!\s)(.+?)(?<!\s)\*\*/u', '<b>$1</b>', $text);
+    $text = preg_replace('/(?<!\*)\*(?![\*\s])(.+?)(?<![\*\s])\*(?!\*)/u', '<b>$1</b>', $text);
+
+    // _italic_ (not inside a word, so "my_variable_name" stays as is)
+    $text = preg_replace('/(?<![\p{L}\p{N}_])_(?![_\s])(.+?)(?<![_\s])_(?![\p{L}\p{N}_])/u', '<i>$1</i>', $text);
+
+    // Put back images, URLs and checkboxes
+    return preg_replace_callback('/\0(\d+)\0/', fn($m) => $tokens[(int)$m[1]], $text);
 }

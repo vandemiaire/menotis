@@ -1,4 +1,10 @@
 /**
+ * Header that every AJAX request to Ménotis must send (protection against CSRF, see csrf.inc.php).
+ * Use it in every fetch() / XMLHttpRequest that does not go through postData().
+ */
+const MENOTIS_HEADERS = { "X-Menotis": "1" };
+
+/**
  * Sends a POST request and returns the response.
  * @param {string} url - The URL to send the request to.
  * @param {Object} params - Key/value pairs to send as POST parameters.
@@ -10,7 +16,8 @@ async function postData(url, params = {}, responseType = "json") {
         // Send a POST request using fetch
         const response = await fetch(url, {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            // "X-Menotis" is required by the server (csrf.inc.php), see MENOTIS_HEADERS
+            headers: { "Content-Type": "application/x-www-form-urlencoded", ...MENOTIS_HEADERS },
             body: new URLSearchParams(params) // Convert params object to URL-encoded string
         });
 

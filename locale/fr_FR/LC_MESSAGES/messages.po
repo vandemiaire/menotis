@@ -33,6 +33,11 @@ msgstr "Erreur inconnue durant l'enregistrement"
 msgid "Unable to open the temporary ZIP file"
 msgstr "Impossible d'ouvrir le fichier ZIP temporaire"
 
+#: backup.ajax.php
+#, php-format
+msgid "This backup contains a file that is not allowed: %s"
+msgstr "Cette sauvegarde contient un fichier non autorisé : %s"
+
 #: backup.ajax.php:87
 msgid "ZIP is not enabled on your PHP server"
 msgstr "ZIP n'est pas activé sur votre serveur PHP"

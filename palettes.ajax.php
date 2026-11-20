@@ -1,4 +1,5 @@
 <?php
+include("csrf.inc.php");
 
 session_start();
 

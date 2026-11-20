@@ -1,4 +1,5 @@
 <?php
+include("csrf.inc.php");
 
 include("const.inc.php");
 include("datas/config.php");
@@ -55,27 +56,84 @@ switch ($_POST["action"]) {
             die();
         }
 
-        // Destination temporaire
-        $temp_zip_file = $upload_dir . "backup_" . bin2hex(random_bytes(16)) . '.zip';
-
-        // Déplacement sécurisé
-        if (!move_uploaded_file($file["tmp_name"], $temp_zip_file)) {
-            http_response_code(500);
-            exit(_("Unknown error while saving"));
-        }
-
+        // The ZIP is read directly from PHP's temporary upload file: it is never copied into the
+        // public "datas/" folder, and it is NEVER extracted as is (extractTo() would accept any file,
+        // e.g. a ".php" script that becomes executable, or a "config.php" that replaces ours).
         $zip = new ZipArchive();
-
-        if ($zip->open($temp_zip_file) === TRUE) {
-            $zip->extractTo($upload_dir);
-            $zip->close();
-            echo "OK";
-        } else {
-            echo _("Unable to open the temporary ZIP file");
+        if ($zip->open($file["tmp_name"]) !== TRUE) {
+            http_response_code(400);
+            exit(_("Unable to open the temporary ZIP file"));
         }
 
-        // Delete the temporary ZIP file
-        unlink($temp_zip_file);
+        // Only what "backup" produces is accepted: notes (JSON) and images (PNG/JPEG), flat, no folder
+        $maxEntrySize = 20 * 1024 * 1024;   // 20 Mo per file
+        $maxTotalSize = 200 * 1024 * 1024;  // 200 Mo uncompressed (protection against "ZIP bombs")
+        $imageMimeTypes = ["image/png", "image/jpeg"];
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $toRestore = [];
+        $totalSize = 0;
+
+        // Pass 1: check EVERYTHING before writing anything (a rejected ZIP changes nothing)
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $stat = $zip->statIndex($i);
+            $name = $stat["name"];
+
+            // Folders (e.g. created by some ZIP tools) are ignored
+            if (substr($name, -1) === "/") {
+                continue;
+            }
+
+            $isNote = preg_match('/^note[a-zA-Z0-9]{1,64}\.json$/', $name) === 1;
+            $isImage = preg_match('/^[a-zA-Z0-9_-]{1,64}\.(png|jpe?g)$/i', $name) === 1;
+
+            // Anything else (".php", "config.php", sub-folders, "../", ...) rejects the whole ZIP
+            if (!$isNote && !$isImage) {
+                $zip->close();
+                http_response_code(400);
+                exit(sprintf(_("This backup contains a file that is not allowed: %s"), htmlspecialchars($name, ENT_QUOTES, 'UTF-8')));
+            }
+
+            // Size checks (declared size, then real size once read)
+            $totalSize += $stat["size"];
+            if ($stat["size"] > $maxEntrySize || $totalSize > $maxTotalSize) {
+                $zip->close();
+                http_response_code(400);
+                exit(_("This file is too big"));
+            }
+            $content = $zip->getFromIndex($i, $maxEntrySize + 1);
+            if ($content === false || strlen($content) > $maxEntrySize) {
+                $zip->close();
+                http_response_code(400);
+                exit(_("This file is too big"));
+            }
+
+            // The content must match the type: a real note or a real image
+            $valid = $isNote
+                ? is_object(json_decode($content))
+                : in_array($finfo->buffer($content), $imageMimeTypes, true);
+            if (!$valid) {
+                $zip->close();
+                http_response_code(400);
+                exit(sprintf(_("This backup contains a file that is not allowed: %s"), htmlspecialchars($name, ENT_QUOTES, 'UTF-8')));
+            }
+
+            // Only the index is kept (not the content) to limit memory usage
+            $toRestore[$i] = $name;
+            unset($content);
+        }
+
+        // Pass 2: write the checked files (names are validated, so they stay inside "datas/")
+        foreach ($toRestore as $i => $name) {
+            $content = $zip->getFromIndex($i, $maxEntrySize + 1);
+            if ($content === false || file_put_contents($upload_dir . $name, $content) === false) {
+                $zip->close();
+                http_response_code(500);
+                exit(_("Unknown error while saving"));
+            }
+        }
+        $zip->close();
+
+        echo "OK";
 
         break;
 

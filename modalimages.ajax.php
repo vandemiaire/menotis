@@ -1,8 +1,10 @@
 <?php
+include("csrf.inc.php");
 
 include("const.inc.php");
 include("datas/config.php");
 include("security.inc.php");
+include("functions.inc.php");
 
 // Hacking attempt
 if (!checkCookie()) {
@@ -12,7 +14,9 @@ if (!checkCookie()) {
 foreach (glob("datas/*.{jpg,JPG,jpeg,JPEG,png,PNG}", GLOB_BRACE) as $file) {
 
     // Just the file name with extension (it can be "png" or "jpg")
-    $basename = basename($file);
+    // Escaped because file names may come from a restored backup (XSS)
+    $basename = escHtml(basename($file));
+    $file = escHtml($file);
 
     // Label
     $label_delete = _("Delete");
