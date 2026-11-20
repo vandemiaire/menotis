@@ -20,28 +20,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById("modal-delete-yes").addEventListener("click", () => {
-
-        const uid = document.getElementById("currentuid").value;
-
-        // Remove file via POST
-        fetch("notes.ajax.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                ...MENOTIS_HEADERS
-            },
-            body: new URLSearchParams({
-                action: "delete",
-                uid: uid
-            })
-        });
-
-        // Remove from DOM
-        const card = document.getElementById(uid + "-card");
-        if (card) card.remove();
-
-    });
-</script>
+<!-- Click on "modal-delete-yes" is handled in events.js -->

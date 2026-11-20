@@ -228,11 +228,12 @@ document.querySelectorAll(".note-btn-modal-color").forEach(button => {
 // ----------------------
 document.getElementById("modal-delete-yes").addEventListener("click", async () => {
     const uid = document.getElementById("currentuid").value;
-    await postData("notes.ajax.php", { action: "delete", uid });
-
-    const card = document.getElementById("card-" + uid);
-    if (card) card.remove();
-
+    try {
+        await postData("notes.ajax.php", { action: "delete", uid });
+    } finally {
+        // Reload to refresh the lists and counters (even if the request failed)
+        window.location.reload();
+    }
 });
 
 // ----------------------
